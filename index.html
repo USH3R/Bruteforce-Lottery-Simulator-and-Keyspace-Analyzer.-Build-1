@@ -10,20 +10,42 @@
     <div class="container">
         <h1>Brute Force Lottery Simulator</h1>
 
+        <!-- Winning numbers display -->
+        <div>
+            <strong>Winning Numbers:</strong>
+            <span id="winningNumbers"></span>
+        </div>
+
+        <!-- Stats panel -->
+        <div class="stats">
+            <p>Tickets Bought: <span id="ticketsBought">0</span></p>
+            <p>Total Spent: $<span id="totalSpent">0</span></p>
+            <p>Status: <span id="status">Ready</span></p>
+        </div>
+
+        <!-- Controls -->
         <div class="controls">
             <button id="buy1">Buy 1 Ticket</button>
             <button id="buy100">Buy 100 Tickets</button>
             <button id="autoRun">Auto-Run</button>
         </div>
 
-        <div class="stats">
-            <p><strong>Winning Numbers:</strong> <span id="winningNumbers">-</span></p>
-            <p><strong>Tickets Bought:</strong> <span id="ticketsBought">0</span></p>
-            <p><strong>Total Spent:</strong> $<span id="totalSpent">0</span></p>
-            <p><strong>Status:</strong> <span id="status">Waiting...</span></p>
+        <!-- Event log -->
+        <div id="eventLog" style="
+            background:#000; 
+            color:#0f0; 
+            font-family:monospace; 
+            height:120px; 
+            overflow-y:auto; 
+            font-size:12px; 
+            padding:10px; 
+            margin-top:15px; 
+            border-radius:4px;">
+            [SYSTEM] Ready for brute force...
         </div>
     </div>
 
+    <!-- Script -->
     <script src="script.js"></script>
 </body>
 </html>
