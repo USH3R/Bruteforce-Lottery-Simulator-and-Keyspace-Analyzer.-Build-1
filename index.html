@@ -1,6 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brute Force Lottery Simulator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Brute Force Lottery Simulator</h1>
+    
+    <div id="winningNumbers">
+        Winning Numbers: <span id="numbers">--, --, --, --, --, --</span>
+        <br>
+        Lottery Jackpot: <span id="jackpotAmount">$0</span>
+    </div>
+
+    <div class="controls">
+        <button id="buyOne">Buy 1 Ticket</button>
+        <button id="buyHundred">Buy 100 Tickets</button>
+        <button id="autoRun">Auto-Run</button>
+        <button id="pauseRun">Pause</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <div class="stats">
+        Tickets Bought: <span id="ticketsBought">0</span><br>
+        Total Spent: <span id="totalSpent">$0</span><br>
+        Status: <span id="status">Paused</span>
+    </div>
+
+    <div id="eventLog" style="background:#000; color:#0f0; font-family:monospace; height:120px; overflow-y:scroll; font-size:12px; padding:10px; margin-top:15px; border-radius:4px;">
+        [SYSTEM] Ready for brute force...
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brute Force Lottery Simulator + Analyzer</title>
