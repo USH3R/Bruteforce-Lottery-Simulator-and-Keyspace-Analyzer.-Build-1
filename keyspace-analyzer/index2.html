@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brute Force Keyspace Analyzer</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Brute Force Keyspace Analyzer</h1>
+
+        <div class="controls">
+            <button id="calcOne">Calculate Keyspace</button>
+            <button id="calcAuto">Auto-Simulate</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+
+        <div class="stats">
+            <p><strong>Total Combinations:</strong> <span id="totalComb">0</span></p>
+            <p><strong>Time to Brute Force:</strong> <span id="timeEst">0 sec</span></p>
+            <p><strong>Status:</strong> <span id="status">Idle</span></p>
+        </div>
+
+        <div id="eventLog">
+            [SYSTEM] Ready for keyspace analysis...
+        </div>
+    </div>
+
+    <script src="script2.js"></script>
+</body>
+</html>
