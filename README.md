@@ -11,9 +11,8 @@ Build 1 is only the simulator portion of the game.
 └── README.md         # Instructions  
   
 # Running the Game via GitHub Codespaces or Terminal  
-1. Open this repository in **GitHub Codespaces** (or any environment that lets you open a terminal from the repo).  
-2. In the terminal, navigate to the project folder containing `run.sh`.  
-3. Run the following command:  bash run.sh  
+1. Open this repository in **GitHub Codespaces**.  
+2. Run the following command:  bash run.sh  
 This will automatically launch the game in a new browser tab, where you can play it exactly like you would if you had cloned the repo locally.  
 Playing the Game  
 Buy 1 Ticket – generates a single lottery ticket  
