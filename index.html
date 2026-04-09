@@ -3,49 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brute Force Lottery Simulator</title>
+    <title>Brute Force Lottery Simulator + Analyzer</title>
+    <!-- Main simulator CSS -->
     <link rel="stylesheet" href="style.css">
+    <!-- Analyzer CSS -->
+    <link rel="stylesheet" href="analyzer/style2.css">
 </head>
 <body>
-    <div class="container">
+    <!-- Simulator Container -->
+    <div class="container" id="simulator">
         <h1>Brute Force Lottery Simulator</h1>
+        <p>Winning Numbers: <span id="winningNumbers"></span></p>
+        <p>Tickets Bought: <span id="ticketsBought">0</span></p>
+        <p>Total Spent: $<span id="totalSpent">0</span></p>
+        <p>Status: <span id="status">Paused</span></p>
 
-        <!-- Winning numbers display -->
-        <div>
-            <strong>Winning Numbers:</strong>
-            <span id="winningNumbers"></span>
-        </div>
-
-        <!-- Stats panel -->
-        <div class="stats">
-            <p>Tickets Bought: <span id="ticketsBought">0</span></p>
-            <p>Total Spent: $<span id="totalSpent">0</span></p>
-            <p>Status: <span id="status">Ready</span></p>
-        </div>
-
-        <!-- Controls -->
         <div class="controls">
-            <button id="buy1">Buy 1 Ticket</button>
-            <button id="buy100">Buy 100 Tickets</button>
-            <button id="autoRun">Auto-Run</button>
+            <button onclick="buyTickets(1)">Buy 1 Ticket</button>
+            <button onclick="buyTickets(100)">Buy 100 Tickets</button>
+            <button onclick="toggleAutoRun()">Auto-Run</button>
         </div>
 
-        <!-- Event log -->
-        <div id="eventLog" style="
-            background:#000; 
-            color:#0f0; 
-            font-family:monospace; 
-            height:120px; 
-            overflow-y:auto; 
-            font-size:12px; 
-            padding:10px; 
-            margin-top:15px; 
-            border-radius:4px;">
+        <!-- Event Log -->
+        <div id="eventLog" style="background:#000; color:#0f0; font-family:monospace; height:80px; overflow-y:hidden; font-size:12px; padding:10px; margin-top:15px; border-radius:4px;">
             [SYSTEM] Ready for brute force...
         </div>
     </div>
 
-    <!-- Script -->
+    <!-- Analyzer Container -->
+    <div class="container" id="analyzer">
+        <h1>Lottery Keyspace Analyzer</h1>
+        <p>Total Possible Combinations: <span id="totalCombinations">0</span></p>
+        <p>Estimated Time to Complete Brute Force: <span id="estimatedTime">0</span></p>
+        <div class="controls">
+            <button onclick="calculateKeyspace()">Run Analyzer</button>
+        </div>
+    </div>
+
+    <!-- Main simulator JS -->
     <script src="script.js"></script>
+    <!-- Analyzer JS -->
+    <script src="analyzer/script2.js"></script>
 </body>
 </html>
