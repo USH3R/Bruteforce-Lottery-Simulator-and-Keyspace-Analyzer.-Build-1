@@ -1,0 +1,60 @@
+/* Reset some basic styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* Main container */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+/* Header */
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+.controls {
+    margin-bottom: 30px;
+}
+
+button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Stats display */
+.stats {
+    text-align: left;
+    font-size: 1.1em;
+}
+
+.stats p {
+    margin: 10px 0;
+}
+
+.stats span {
+    font-weight: bold;
+}
