@@ -1,211 +1,139 @@
-// Brute Force Lottery Simulator with Event Log
+// ===== Brute Force Lottery Simulator =====
 
-// Game settings
-const TICKET_PRICE = 2;      // Cost per ticket
-const NUMBERS_PER_TICKET = 6;
-const MAX_NUMBER = 49;
+// Constants
+const ticketPrice = 2; // $2 per ticket
+const winningNumbersCount = 6;
 
-// State variables
-let winningNumbers = generateWinningNumbers();
+// State
 let ticketsBought = 0;
 let totalSpent = 0;
 let autoRunInterval = null;
+let isAutoRunning = false;
 
-// UI Elements
-const winningNumbersEl = document.getElementById("winningNumbers");
+// Generate winning numbers and jackpot
+let winningNumbers = generateWinningNumbers();
+let lotteryJackpot = generateJackpot();
+
+// DOM Elements
 const ticketsBoughtEl = document.getElementById("ticketsBought");
 const totalSpentEl = document.getElementById("totalSpent");
 const statusEl = document.getElementById("status");
-const eventLogEl = document.getElementById("eventLog");
-
-const buy1Btn = document.getElementById("buy1");
-const buy100Btn = document.getElementById("buy100");
-const autoRunBtn = document.getElementById("autoRun");
+const numbersEl = document.getElementById("winningNumbers");
+const jackpotEl = document.getElementById("jackpotAmount");
+const eventLog = document.getElementById("eventLog");
 
 // Initialize UI
-winningNumbersEl.textContent = [...winningNumbers].join(", ");
 updateUI();
+logEvent("System ready. Waiting for ticket purchase...");
 
-// Event Listeners
-buy1Btn.addEventListener("click", () => buyTickets(1));
-buy100Btn.addEventListener("click", () => buyTickets(100));
-autoRunBtn.addEventListener("click", toggleAutoRun);
+// ===== Helper Functions =====
 
-// Functions
 function generateWinningNumbers() {
-    let numbers = new Set();
-    while (numbers.size < NUMBERS_PER_TICKET) {
-        numbers.add(Math.floor(Math.random() * MAX_NUMBER) + 1);
+    let nums = [];
+    while (nums.length < winningNumbersCount) {
+        let n = Math.floor(Math.random() * 50) + 1;
+        if (!nums.includes(n)) nums.push(n);
     }
-    return numbers;
+    return nums.sort((a,b) => a-b);
 }
 
-function generateTicket() {
-    let ticket = new Set();
-    while (ticket.size < NUMBERS_PER_TICKET) {
-        ticket.add(Math.floor(Math.random() * MAX_NUMBER) + 1);
-    }
-    return ticket;
+function generateJackpot() {
+    // Random from 1M to 1B in 500K increments
+    let min = 1_000_000;
+    let max = 1_000_000_000;
+    let step = 500_000;
+    let count = Math.floor((max - min) / step);
+    return min + step * Math.floor(Math.random() * count);
 }
 
+function updateUI() {
+    ticketsBoughtEl.textContent = ticketsBought.toLocaleString();
+    totalSpentEl.textContent = `$${totalSpent.toLocaleString()}`;
+    numbersEl.textContent = winningNumbers.join(", ");
+    jackpotEl.textContent = `$${lotteryJackpot.toLocaleString()}`;
+    statusEl.textContent = isAutoRunning ? "Running" : "Paused";
+}
+
+function logEvent(message) {
+    eventLog.innerHTML = `[LOG] ${message}<br>` + eventLog.innerHTML;
+    eventLog.scrollTop = 0; // newest on top
+}
+
+// Simulate buying tickets
 function buyTickets(count) {
     for (let i = 0; i < count; i++) {
         ticketsBought++;
-        totalSpent += TICKET_PRICE;
-        let ticket = generateTicket();
+        totalSpent += ticketPrice;
 
-        // Jackpot check
-        if (isJackpot(ticket)) {
+        // Each ticket generates random numbers
+        let ticket = [];
+        while (ticket.length < winningNumbersCount) {
+            let n = Math.floor(Math.random() * 50) + 1;
+            if (!ticket.includes(n)) ticket.push(n);
+        }
+        ticket.sort((a,b) => a-b);
+
+        // Check jackpot
+        if (arraysEqual(ticket, winningNumbers)) {
+            logEvent(`JACKPOT HIT after ${ticketsBought.toLocaleString()} tickets!`);
+            stopAutoRun();
+            isAutoRunning = false;
             updateUI();
-            statusEl.textContent = "🎉 JACKPOT HIT! 🎉";
-            logEvent(`[SUCCESS] Jackpot hit after ${ticketsBought.toLocaleString()} tickets!`);
-            if (autoRunInterval) clearInterval(autoRunInterval);
             return;
         }
 
-        // Event log update every 10k tickets
+        // Log every 10k tickets
         if (ticketsBought % 10000 === 0) {
-            logEvent(`[LOG] ${ticketsBought.toLocaleString()} attempts. No match.`);
+            logEvent(`${ticketsBought.toLocaleString()} attempts. No match.`);
         }
     }
     updateUI();
 }
 
-function isJackpot(ticket) {
-    if (ticket.size !== winningNumbers.size) return false;
-    for (let num of ticket) {
-        if (!winningNumbers.has(num)) return false;
-    }
-    return true;
+// ===== Button Handlers =====
+document.getElementById("buyOne").addEventListener("click", () => buyTickets(1));
+document.getElementById("buyHundred").addEventListener("click", () => buyTickets(100));
+
+document.getElementById("autoRun").addEventListener("click", () => {
+    if (!isAutoRunning) startAutoRun();
+});
+
+document.getElementById("pauseRun").addEventListener("click", () => {
+    if (isAutoRunning) stopAutoRun();
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+    stopAutoRun();
+    ticketsBought = 0;
+    totalSpent = 0;
+    winningNumbers = generateWinningNumbers();
+    lotteryJackpot = generateJackpot();
+    logEvent("Simulator reset. New winning numbers generated.");
+    updateUI();
+});
+
+// ===== Auto Run =====
+function startAutoRun() {
+    isAutoRunning = true;
+    updateUI();
+    logEvent("Auto-Run started.");
+
+    autoRunInterval = setInterval(() => {
+        buyTickets(10000); // buys 10k tickets per tick
+        if (!isAutoRunning) stopAutoRun();
+    }, 100);
 }
 
-function updateUI() {
-    ticketsBoughtEl.textContent = ticketsBought;
-    totalSpentEl.textContent = totalSpent;
-}
-
-function toggleAutoRun() {
-    if (autoRunInterval) {
-        clearInterval(autoRunInterval);
-        autoRunInterval = null;
-        autoRunBtn.textContent = "Auto-Run";
-        statusEl.textContent = "Paused";
-        logEvent("[SYSTEM] Auto-Run paused.");
-    } else {
-        autoRunBtn.textContent = "Stop Auto-Run";
-        statusEl.textContent = "Running...";
-        logEvent("[SYSTEM] Auto-Run started.");
-        autoRunInterval = setInterval(() => buyTickets(1000), 50);
-    }
-}
-
-// Utility function to add events to the log
-function logEvent(message) {
-    eventLogEl.innerHTML = message + "<br>" + eventLogEl.innerHTML;
-    eventLogEl.scrollTop = 0; // Keep newest at top
-}// Brute Force Lottery Simulator with Event Log
-
-// Game settings
-const TICKET_PRICE = 2;      // Cost per ticket
-const NUMBERS_PER_TICKET = 6;
-const MAX_NUMBER = 49;
-
-// State variables
-let winningNumbers = generateWinningNumbers();
-let ticketsBought = 0;
-let totalSpent = 0;
-let autoRunInterval = null;
-
-// UI Elements
-const winningNumbersEl = document.getElementById("winningNumbers");
-const ticketsBoughtEl = document.getElementById("ticketsBought");
-const totalSpentEl = document.getElementById("totalSpent");
-const statusEl = document.getElementById("status");
-const eventLogEl = document.getElementById("eventLog");
-
-const buy1Btn = document.getElementById("buy1");
-const buy100Btn = document.getElementById("buy100");
-const autoRunBtn = document.getElementById("autoRun");
-
-// Initialize
-winningNumbersEl.textContent = [...winningNumbers].join(", ");
-eventLogEl.innerHTML = "[SYSTEM] Ready for brute force...<br>";
-
-// Event Listeners
-buy1Btn.addEventListener("click", () => buyTickets(1));
-buy100Btn.addEventListener("click", () => buyTickets(100));
-autoRunBtn.addEventListener("click", toggleAutoRun);
-
-// Functions
-function generateWinningNumbers() {
-    let numbers = new Set();
-    while (numbers.size < NUMBERS_PER_TICKET) {
-        numbers.add(Math.floor(Math.random() * MAX_NUMBER) + 1);
-    }
-    return numbers;
-}
-
-function generateTicket() {
-    let ticket = new Set();
-    while (ticket.size < NUMBERS_PER_TICKET) {
-        ticket.add(Math.floor(Math.random() * MAX_NUMBER) + 1);
-    }
-    return ticket;
-}
-
-function buyTickets(count) {
-    for (let i = 0; i < count; i++) {
-        ticketsBought++;
-        totalSpent += TICKET_PRICE;
-        let ticket = generateTicket();
-
-        // Jackpot check
-        if (isJackpot(ticket)) {
-            updateUI();
-            statusEl.textContent = "🎉 JACKPOT HIT! 🎉";
-            logEvent(`[SUCCESS] Jackpot hit after ${ticketsBought.toLocaleString()} tickets!`);
-            if (autoRunInterval) clearInterval(autoRunInterval);
-            return;
-        }
-
-        // Event log update every 10k tickets
-        if (ticketsBought % 10000 === 0) {
-            logEvent(`[LOG] ${ticketsBought.toLocaleString()} attempts. No match.`);
-        }
-    }
+function stopAutoRun() {
+    isAutoRunning = false;
+    clearInterval(autoRunInterval);
+    logEvent("Auto-Run paused.");
     updateUI();
 }
 
-function isJackpot(ticket) {
-    if (ticket.size !== winningNumbers.size) return false;
-    for (let num of ticket) {
-        if (!winningNumbers.has(num)) return false;
-    }
+// ===== Utility =====
+function arraysEqual(a, b) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
     return true;
-}
-
-function updateUI() {
-    ticketsBoughtEl.textContent = ticketsBought;
-    totalSpentEl.textContent = totalSpent;
-}
-
-function toggleAutoRun() {
-    if (autoRunInterval) {
-        clearInterval(autoRunInterval);
-        autoRunInterval = null;
-        autoRunBtn.textContent = "Auto-Run";
-        statusEl.textContent = "Paused";
-        logEvent("[SYSTEM] Auto-Run paused.");
-    } else {
-        autoRunBtn.textContent = "Stop Auto-Run";
-        statusEl.textContent = "Running...";
-        logEvent("[SYSTEM] Auto-Run started.");
-        autoRunInterval = setInterval(() => buyTickets(1000), 50);
-    }
-}
-
-// Utility function to add events to the log
-function logEvent(message) {
-    eventLogEl.innerHTML = message + "<br>" + eventLogEl.innerHTML;
-    eventLogEl.scrollTop = 0; // Keep newest at top
 }
