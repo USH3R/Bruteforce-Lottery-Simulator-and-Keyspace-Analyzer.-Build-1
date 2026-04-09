@@ -1,15 +1,15 @@
-Build 1 of Bruteforce Simulator and Analyzer
-Build 1 is only the simulator portion of the game.
-
-/bruteforce-lottery-simulator
-│
-├── index.html        # Browser version
-├── style.css         # Browser styling
-├── script.js         # Game logic
-├── simulator.py      # Optional terminal version
-├── run.sh            # Bash script to run terminal version
-└── README.md         # Instructions
-
+Build 1 of Bruteforce Simulator and Analyzer  
+Build 1 is only the simulator portion of the game.  
+  
+/bruteforce-lottery-simulator  
+│  
+├── index.html        # Browser version  
+├── style.css         # Browser styling  
+├── script.js         # Game logic  
+├── simulator.py      # Optional terminal version  
+├── run.sh            # Bash script to run terminal version  
+└── README.md         # Instructions  
+  
 # Running the Game via GitHub Codespaces or Terminal  
 1. Open this repository in **GitHub Codespaces** (or any environment that lets you open a terminal from the repo).  
 2. In the terminal, navigate to the project folder containing `run.sh`.  
