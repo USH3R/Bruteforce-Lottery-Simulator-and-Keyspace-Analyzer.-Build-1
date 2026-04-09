@@ -1,4 +1,56 @@
-// script.js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Brute Force Lottery Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Brute Force Lottery Simulator</h1>
+
+        <div id="winningNumbersRow">
+            <strong>Winning Numbers:</strong> 
+            <span id="numbers"></span>
+        </div>
+
+        <div id="jackpotRow">
+            <strong>Lottery Jackpot:</strong> 
+            <span id="jackpotAmount"></span>
+        </div>
+
+        <div class="controls">
+            <button id="buyOne">Buy 1 Ticket</button>
+            <button id="buyHundred">Buy 100 Tickets</button>
+            <button id="autoRun">Auto-Run</button>
+            <button id="pauseRun">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
+
+        <div class="stats">
+            <div><strong>Tickets Bought:</strong> <span id="ticketsBought">0</span></div>
+            <div><strong>Total Spent:</strong> <span id="totalSpent">$0</span></div>
+            <div><strong>Status:</strong> <span id="status">Paused</span></div>
+        </div>
+
+        <div id="eventLog" style="
+            background:#000; 
+            color:#0f0; 
+            font-family:monospace; 
+            height:160px; 
+            overflow-y:auto; 
+            font-size:12px; 
+            padding:10px; 
+            margin-top:15px; 
+            border-radius:4px;
+            border:1px solid #333;">
+            [SYSTEM] Ready for brute force...
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>// script.js
 
 let ticketsBought = 0;
 let totalSpent = 0;
