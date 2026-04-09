@@ -1,89 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brute Force Lottery Simulator</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+// script.js
 
-<div class="container">
-    <h1>Brute Force Lottery Simulator</h1>
-    
-    <div id="winningNumbers">
-        Winning Numbers: <span id="numbers">--, --, --, --, --, --</span>
-        <br>
-        Lottery Jackpot: <span id="jackpotAmount">$0</span>
-    </div>
+let ticketsBought = 0;
+let totalSpent = 0;
+let autoRunInterval = null;
+const ticketCost = 2; // $2 per ticket
+const maxAutoPurchases = 50;
+const ticketsPerAuto = 10000;
 
-    <div class="controls">
-        <button id="buyOne">Buy 1 Ticket</button>
-        <button id="buyHundred">Buy 100 Tickets</button>
-        <button id="autoRun">Auto-Run</button>
-        <button id="pauseRun">Pause</button>
-        <button id="reset">Reset</button>
-    </div>
+const winningNumbersElem = document.getElementById("numbers");
+const jackpotElem = document.getElementById("jackpotAmount");
+const ticketsBoughtElem = document.getElementById("ticketsBought");
+const totalSpentElem = document.getElementById("totalSpent");
+const statusElem = document.getElementById("status");
+const eventLog = document.getElementById("eventLog");
 
-    <div class="stats">
-        Tickets Bought: <span id="ticketsBought">0</span><br>
-        Total Spent: <span id="totalSpent">$0</span><br>
-        Status: <span id="status">Paused</span>
-    </div>
+// Generate winning numbers 1-50 for simulation
+function generateWinningNumbers() {
+    let nums = [];
+    while (nums.length < 6) {
+        let n = Math.floor(Math.random() * 50) + 1;
+        if (!nums.includes(n)) nums.push(n);
+    }
+    return nums;
+}
 
-    <div id="eventLog" style="background:#000; color:#0f0; font-family:monospace; height:120px; overflow-y:scroll; font-size:12px; padding:10px; margin-top:15px; border-radius:4px;">
-        [SYSTEM] Ready for brute force...
-    </div>
-</div>
+// Generate jackpot random $1M - $1B increments $500k
+function generateJackpot() {
+    const min = 1000000;
+    const max = 1000000000;
+    const step = 500000;
+    let rand = Math.floor(Math.random() * ((max - min) / step + 1));
+    return min + rand * step;
+}
 
-<script src="script.js"></script>
+// Current winning numbers and jackpot
+let winningNumbers = generateWinningNumbers();
+let jackpot = generateJackpot();
 
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brute Force Lottery Simulator + Analyzer</title>
-    <!-- Main simulator CSS -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Analyzer CSS -->
-    <link rel="stylesheet" href="analyzer/style2.css">
-</head>
-<body>
-    <!-- Simulator Container -->
-    <div class="container" id="simulator">
-        <h1>Brute Force Lottery Simulator</h1>
-        <p>Winning Numbers: <span id="winningNumbers"></span></p>
-        <p>Tickets Bought: <span id="ticketsBought">0</span></p>
-        <p>Total Spent: $<span id="totalSpent">0</span></p>
-        <p>Status: <span id="status">Paused</span></p>
+// Display
+function updateDisplay() {
+    winningNumbersElem.textContent = winningNumbers.join(", ");
+    jackpotElem.textContent = "$" + jackpot.toLocaleString();
+    ticketsBoughtElem.textContent = ticketsBought.toLocaleString();
+    totalSpentElem.textContent = "$" + totalSpent.toLocaleString();
+}
 
-        <div class="controls">
-            <button onclick="buyTickets(1)">Buy 1 Ticket</button>
-            <button onclick="buyTickets(100)">Buy 100 Tickets</button>
-            <button onclick="toggleAutoRun()">Auto-Run</button>
-        </div>
+function logEvent(message) {
+    eventLog.innerHTML = `[LOG] ${message}<br>` + eventLog.innerHTML;
+    eventLog.scrollTop = 0; // keep newest at top
+}
 
-        <!-- Event Log -->
-        <div id="eventLog" style="background:#000; color:#0f0; font-family:monospace; height:80px; overflow-y:hidden; font-size:12px; padding:10px; margin-top:15px; border-radius:4px;">
-            [SYSTEM] Ready for brute force...
-        </div>
-    </div>
+function checkTickets(purchaseCount) {
+    for (let i = 0; i < purchaseCount; i++) {
+        ticketsBought++;
+        totalSpent += ticketCost;
 
-    <!-- Analyzer Container -->
-    <div class="container" id="analyzer">
-        <h1>Lottery Keyspace Analyzer</h1>
-        <p>Total Possible Combinations: <span id="totalCombinations">0</span></p>
-        <p>Estimated Time to Complete Brute Force: <span id="estimatedTime">0</span></p>
-        <div class="controls">
-            <button onclick="calculateKeyspace()">Run Analyzer</button>
-        </div>
-    </div>
+        let userTicket = [];
+        while (userTicket.length < 6) {
+            let n = Math.floor(Math.random() * 50) + 1;
+            if (!userTicket.includes(n)) userTicket.push(n);
+        }
 
-    <!-- Main simulator JS -->
-    <script src="script.js"></script>
-    <!-- Analyzer JS -->
-    <script src="analyzer/script2.js"></script>
-</body>
-</html>
+        let match = winningNumbers.every(num => userTicket.includes(num));
+        if (match) {
+            logEvent(`JACKPOT HIT after ${ticketsBought.toLocaleString()} tickets!`);
+            statusElem.textContent = "Paused - Jackpot Won!";
+            clearInterval(autoRunInterval);
+            autoRunInterval = null;
+            break;
+        } else if (ticketsBought % 10000 === 0 || purchaseCount === 1) {
+            logEvent(`${ticketsBought.toLocaleString()} attempts. No match.`);
+        }
+    }
+    updateDisplay();
+}
+
+// Button handlers
+document.getElementById("buyOne").addEventListener("click", () => checkTickets(1));
+document.getElementById("buyHundred").addEventListener("click", () => checkTickets(100));
+
+document.getElementById("autoRun").addEventListener("click", () => {
+    if (autoRunInterval) return;
+    statusElem.textContent = "Running";
+    let purchases = 0;
+    autoRunInterval = setInterval(() => {
+        checkTickets(ticketsPerAuto);
+        purchases++;
+        if (purchases >= maxAutoPurchases) {
+            clearInterval(autoRunInterval);
+            autoRunInterval = null;
+            statusElem.textContent = "Paused - Auto-Run Complete";
+        }
+    }, 100); // small delay for UI updates
+});
+
+document.getElementById("pauseRun").addEventListener("click", () => {
+    if (autoRunInterval) {
+        clearInterval(autoRunInterval);
+        autoRunInterval = null;
+        statusElem.textContent = "Paused";
+    }
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+    ticketsBought = 0;
+    totalSpent = 0;
+    winningNumbers = generateWinningNumbers();
+    jackpot = generateJackpot();
+    statusElem.textContent = "Paused";
+    logEvent("[SYSTEM] Reset completed. Ready for brute force...");
+    updateDisplay();
+});
+
+// Initial display
+updateDisplay();
+logEvent("[SYSTEM] Ready for brute force...");
